@@ -13,8 +13,5 @@ TYPE=$(jq -r '.types[0].type.name' "$DATA_FILE")
 formatted_height=$(echo "$HEIGHT" | awk '{printf "%.1f", $1 / 10}')
 formatted_weight=$(echo "$WEIGHT" | awk '{printf "%.1f", $1 / 10}')
 
-# Create a human-readable output using sed for formatting
-output=$(echo "$NAME is of type $TYPE, weighs ${formatted_weight}kg, and is ${formatted_height}m tall." | sed 's/^/Formatted Output: /')
-
-# Print the output
-echo "$output"
+# Output the formatted string exactly as specified
+echo "$NAME is of type $TYPE, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
