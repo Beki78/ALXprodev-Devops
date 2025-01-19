@@ -4,6 +4,7 @@
 POKEMONS=("bulbasaur" "ivysaur" "venusaur" "charmander" "charmeleon")
 API_URL="https://pokeapi.co/api/v2/pokemon"
 
+# Function to fetch data
 fetch_data() {
     POKEMON=$1
     FILE_NAME="${POKEMON}.json"
@@ -13,13 +14,26 @@ fetch_data() {
     echo "Fetched data for $POKEMON"
 }
 
+# Array to hold PIDs of background jobs
+pids=()
+
 # Loop through Pokémon and fetch data in parallel
 for POKEMON in "${POKEMONS[@]}"; do
     fetch_data "$POKEMON" &  # Run fetch_data in the background
+    pids+=($!)  # Store the PID of the background job
 done
 
 # Wait for all background processes to complete
-wait
+for pid in "${pids[@]}"; do
+    wait "$pid" || {
+        echo "Process $pid failed. Attempting to kill remaining jobs."
+        # Kill remaining jobs if any fail
+        for p in "${pids[@]}"; do
+            kill "$p" 2>/dev/null
+        done
+        exit 1
+    }
+done
 
 # Check if there are any jobs still running
 if jobs -r > /dev/null; then
