@@ -3,15 +3,18 @@
 # Read the JSON data from data.json
 DATA_FILE="data.json"
 
-# Extract the Pokémon’s name, height, weight, and type
+# Extract the Pokémon’s name, height, weight, and type using jq
 NAME=$(jq -r '.name' "$DATA_FILE")
 HEIGHT=$(jq -r '.height' "$DATA_FILE")
 WEIGHT=$(jq -r '.weight' "$DATA_FILE")
 TYPE=$(jq -r '.types[0].type.name' "$DATA_FILE")
 
-# Convert height and weight to human-readable format
-formatted_height=$(echo "scale=1; $HEIGHT / 10" | bc)
-formatted_weight=$(echo "scale=1; $WEIGHT / 10" | bc)
+# Format height and weight using awk
+formatted_height=$(echo "$HEIGHT" | awk '{printf "%.1f", $1 / 10}')
+formatted_weight=$(echo "$WEIGHT" | awk '{printf "%.1f", $1 / 10}')
 
-# Format the output
-echo "$NAME is of type $TYPE, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
+# Create a human-readable output using sed for formatting
+output=$(echo "$NAME is of type $TYPE, weighs ${formatted_weight}kg, and is ${formatted_height}m tall." | sed 's/^/Formatted Output: /')
+
+# Print the output
+echo "$output"
